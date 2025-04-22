@@ -10,22 +10,27 @@ void processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
 }
-constexpr static std::array<float, 9> vertices = {
-    -0.5f,
-    -0.5f,
-    0.0f,
-    0.5f,
-    -0.5f,
-    0.0f,
-    0.0f,
-    0.5f,
-    0.0f
+constexpr static std::array<float, 12> vertices = {
+    0.5f,  0.5f,
+    0.0f,  // top right
+    0.5f,  -0.5f,
+    0.0f,  // bottom right
+    -0.5f, -0.5f,
+    0.0f,  // bottom left
+    -0.5f, 0.5f,
+    0.0f  // top le
 };
-const char *vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location=0) in vec3 aPos;\n"
-    "void main(){\n"
-    "gl_Position=vec4(aPos.x,aPos.y,aPos.z,1.0);}\n\0";
+
+
+constexpr static std::array<unsigned int, 6> indices = {
+    0,1,3,1,2,3
+};
+
+const char *vertexShaderSource = "#version 330 core\n"
+                                 "layout (location=0) in vec3 aPos;\n"
+                                 "void main(){\n"
+                                 "gl_Position=vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
+                                 "}\n\0";
 const char *fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
                                    "void main()\n"
@@ -51,7 +56,7 @@ int main() {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
+    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     // 编译着色器
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -87,13 +92,20 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    unsigned int VAO,VBO;
+    unsigned int VAO, VBO;
+    unsigned int EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size(), vertices.data(),
-                 GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+                 vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(),
+                 indices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
@@ -107,8 +119,8 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
         glfwSwapBuffers(window);
         glfwPollEvents();
 
