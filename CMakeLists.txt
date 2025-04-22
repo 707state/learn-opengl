@@ -10,8 +10,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 find_package(glfw3 REQUIRED "/opt/homebrew/opt/glfw")
 
-file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
-add_executable(${PROJECT_NAME} ${MAIN_SOURCES})
+add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
 
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -34,3 +34,12 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${PROJECT_SOURCE_DIR}/include)
+
+target_link_libraries(gl_draw_arrays
+  PRIVATE
+  glad
+  glfw)
+target_include_directories(gl_draw_arrays
+  PRIVATE
+  glad
+  glfw)

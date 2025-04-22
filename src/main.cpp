@@ -2,6 +2,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+constexpr static unsigned int SCR_WIDTH = 800;
+constexpr static unsigned int SRC_HEIGHT = 600;
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0,0,width,height);
 }
@@ -11,19 +14,16 @@ void processInput(GLFWwindow *window) {
     }
 }
 constexpr static std::array<float, 12> vertices = {
-    0.5f,  0.5f,
-    0.0f,  // top right
-    0.5f,  -0.5f,
-    0.0f,  // bottom right
-    -0.5f, -0.5f,
-    0.0f,  // bottom left
-    -0.5f, 0.5f,
-    0.0f  // top le
+    0.5f,  0.5f,  0.0f,  // top right
+    0.5f,  -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f, 0.5f,  0.0f   // top left
 };
 
 
+
 constexpr static std::array<unsigned int, 6> indices = {
-    0,1,3,1,2,3
+    0,1,2,0,2,3
 };
 
 const char *vertexShaderSource = "#version 330 core\n"
@@ -39,6 +39,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
                                    "}\n\0";
 
 int main() {
+    //Initialize glfw stuff
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -52,15 +53,18 @@ int main() {
         return -1;
     }
     glfwMakeContextCurrent(window);
+    // Initialize glad stuff
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    // 设置为线框模式
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    // 编译着色器
+    // 顶点着色器
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
+    // 判断操作是否成功
     int success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -91,7 +95,9 @@ int main() {
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
+    // 链接顶点程序
+    // VAO是顶点数组对象，可以像顶点缓冲对象那样被绑定，任何随后的顶点属性调用都会储存在这个VAO中，好处是，当配置顶点属性指针时，只需要将调用执行一次，之后再绘制无力只需要绑定对应的VAO就可以。
+    // EBO，元素缓冲对象。用EBO可以设定绘制这些顶点的顺序，也就是说，不需要重复渲染就可以绘制出一个三角形。
     unsigned int VAO, VBO;
     unsigned int EBO;
     glGenVertexArrays(1, &VAO);
