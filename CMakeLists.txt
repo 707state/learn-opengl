@@ -16,6 +16,7 @@ find_package(glfw3 REQUIRED "/opt/homebrew/opt/glfw")
 add_executable(${PROJECT_NAME} src/main.cpp)
 add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
 add_executable(gl_different_vao_vbo src/main_different_vao_vbo.cpp)
+add_executable(gl_two_color_program src/main_two_color_program.cpp)
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -61,3 +62,5 @@ auto_link_to_gl(${PROJECT_NAME})
 auto_link_to_gl(gl_draw_arrays)
 # main_different_vao_vbo.cpp
 auto_link_to_gl(gl_different_vao_vbo)
+# main_two_color_program.cpp
+auto_link_to_gl(gl_two_color_program)
