@@ -2,17 +2,11 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "common/util.h"
 constexpr static unsigned int SCR_WIDTH = 800;
 constexpr static unsigned int SRC_HEIGHT = 600;
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0,0,width,height);
-}
-void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-}
+
 constexpr static std::array<float, 12> vertices = {
     0.5f,  0.5f,  0.0f,  // top right
     0.5f,  -0.5f, 0.0f,  // bottom right

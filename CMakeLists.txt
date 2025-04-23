@@ -3,23 +3,26 @@ project(learn_opengl)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 设置输出目录
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# Enable so lib
+option(BUILD_SHARED_LIBS "docstring" ON)
+
+# 全局构建类型设置
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
+endif()
 
 find_package(glfw3 REQUIRED "/opt/homebrew/opt/glfw")
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
-
+add_executable(gl_different_vao_vbo src/main_different_vao_vbo.cpp)
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # 为glad创建独立的库
-add_library(glad
+add_library(glad SHARED
   src/glad/glad.c
   include/KHR/khrplatform.h
   include/glad/glad.h)
@@ -27,19 +30,34 @@ target_include_directories(glad
   PUBLIC
   ${PROJECT_SOURCE_DIR}/include
 )
-target_link_libraries(${PROJECT_NAME}
-  PRIVATE
-  glad
-  glfw)
-target_include_directories(${PROJECT_NAME}
+# common 库
+add_library(common
+  SHARED
+  src/common/util.cpp
+  include/common/util.h
+)
+target_include_directories(common
   PUBLIC
-  ${PROJECT_SOURCE_DIR}/include)
+  ${PROJECT_SOURCE_DIR}/include
+)
+target_link_libraries(common PRIVATE
+  glad
+  glfw)
 
-target_link_libraries(gl_draw_arrays
-  PRIVATE
-  glad
-  glfw)
-target_include_directories(gl_draw_arrays
-  PRIVATE
-  glad
-  glfw)
+
+# Executable file should be linked here.
+function(auto_link_to_gl TARGET)
+  target_link_libraries(${TARGET} PRIVATE glad glfw common)
+  target_include_directories(${TARGET}
+    PUBLIC
+    glad
+    glfw
+    common)
+endfunction()
+
+# main.cpp
+auto_link_to_gl(${PROJECT_NAME})
+# main_gl_draw_arrays.cpp
+auto_link_to_gl(gl_draw_arrays)
+# main_different_vao_vbo.cpp
+auto_link_to_gl(gl_different_vao_vbo)
