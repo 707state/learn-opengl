@@ -6,16 +6,19 @@ constexpr static int SRC_HEIGHT = 600;
 const char* vertexShaderSource =
     "#version 330 core\n"
     "layout (location=0) in vec3 aPos;\n"
+    "out vec4 vertexColor;\n"
     "void main()\n"
     "{\n"
     "gl_Position=vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
+    "vertexColor=vec4(0.5,0.0,0.0,1.0);\n"
     "}\n\0";
 const char* fragmentShaderSource =
     "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "in vec4 vertexColor;\n"
     "void main()\n"
     "{\n"
-    "FragColor=vec4(1.0f,0.4f,0.2f,1.0f);\n"
+    "FragColor=vertexColor;\n"
     "}\n\0";
 int main() {
     // Initialize glfw
@@ -36,7 +39,7 @@ int main() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         return -1;
     }
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
     glCompileShader(vertexShader);
@@ -67,9 +70,9 @@ int main() {
         0.0f,0.5f,0.0f
     };
     float secondTriangle[] = {
-        -0.9f,-0.5f,0.0f,
-        0.9f,-0.5f,0.0f,
-        0.0f,0.5f,0.0f
+        -0.45f,-0.25f,0.0f,
+        0.45f,-0.25f,0.0f,
+        0.0f,0.25f,0.0f
     };
     // clang-format on
     unsigned int VBOs[2], VAOs[2];

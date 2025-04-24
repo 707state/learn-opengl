@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
 add_executable(gl_different_vao_vbo src/main_different_vao_vbo.cpp)
 add_executable(gl_two_color_program src/main_two_color_program.cpp)
+add_executable(gl_texture src/main_texture.cpp)
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -37,23 +38,41 @@ add_library(common
   src/common/util.cpp
   include/common/util.h
 )
+
 target_include_directories(common
   PUBLIC
   ${PROJECT_SOURCE_DIR}/include
 )
 target_link_libraries(common PRIVATE
   glad
-  glfw)
+  glfw
+)
 
+add_library(shader
+  SHARED
+  src/shader/shader.cpp
+  include/shader/shader.h
+  src/glad/glad.c
+)
+
+target_include_directories(shader
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(shader PRIVATE
+  glad
+)
 
 # Executable file should be linked here.
 function(auto_link_to_gl TARGET)
-  target_link_libraries(${TARGET} PRIVATE glad glfw common)
+  target_link_libraries(${TARGET} PRIVATE glad glfw common shader)
   target_include_directories(${TARGET}
     PUBLIC
     glad
     glfw
-    common)
+    common
+    shader)
 endfunction()
 
 # main.cpp
@@ -64,3 +83,5 @@ auto_link_to_gl(gl_draw_arrays)
 auto_link_to_gl(gl_different_vao_vbo)
 # main_two_color_program.cpp
 auto_link_to_gl(gl_two_color_program)
+# main_texture
+auto_link_to_gl(gl_texture)
