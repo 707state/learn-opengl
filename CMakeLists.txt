@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 project(learn_opengl)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # Enable so lib
 option(BUILD_SHARED_LIBS "docstring" ON)
 
@@ -12,15 +11,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 find_package(glfw3 REQUIRED "/opt/homebrew/opt/glfw")
-
 add_executable(${PROJECT_NAME} src/main.cpp)
-add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
-add_executable(gl_different_vao_vbo src/main_different_vao_vbo.cpp)
-add_executable(gl_two_color_program src/main_two_color_program.cpp)
-add_executable(gl_texture src/main_texture.cpp)
-add_executable(gl_transform src/main_transform.cpp)
-add_executable(gl_coordinate src/main_coord.cpp)
-add_executable(gl_camera src/main_camera.cpp)
+
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -41,7 +33,19 @@ add_library(common
   src/common/util.cpp
   include/common/util.h
 )
-
+# camera 库
+add_library(camera
+  SHARED
+  src/camera/camera.cpp
+  include/camera/camera.h)
+target_link_libraries(camera
+  PUBLIC
+  glfw
+)
+target_include_directories(camera
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/include
+)
 target_include_directories(common
   PUBLIC
   ${PROJECT_SOURCE_DIR}/include
@@ -81,35 +85,4 @@ function(auto_link_to_gl TARGET)
     ${ARG_INCLUDES})
 endfunction()
 
-# main.cpp
-auto_link_to_gl(${PROJECT_NAME}
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_gl_draw_arrays.cpp
-auto_link_to_gl(gl_draw_arrays
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_different_vao_vbo.cpp
-auto_link_to_gl(gl_different_vao_vbo
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_two_color_program.cpp
-auto_link_to_gl(gl_two_color_program
-  LIBS glad glfw common shader
-  INCLUDES glfw glad common shader)
-# main_texture
-auto_link_to_gl(gl_texture
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_transform
-auto_link_to_gl(gl_transform
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_coord.cpp
-auto_link_to_gl(gl_coordinate
-  LIBS glad glfw common shader
-  INCLUDES glad glfw common shader)
-# main_camera.cpp
-auto_link_to_gl(gl_camera
-  LIBS glad glfw shader
-  INCLUDES glad glfw shader)
+add_subdirectory(src/chap1_intro/)
