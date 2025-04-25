@@ -18,6 +18,9 @@ add_executable(gl_draw_arrays src/main_gl_draw_arrays.cpp)
 add_executable(gl_different_vao_vbo src/main_different_vao_vbo.cpp)
 add_executable(gl_two_color_program src/main_two_color_program.cpp)
 add_executable(gl_texture src/main_texture.cpp)
+add_executable(gl_transform src/main_transform.cpp)
+add_executable(gl_coordinate src/main_coord.cpp)
+add_executable(gl_camera src/main_camera.cpp)
 # 添加头文件目录
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -62,26 +65,51 @@ target_include_directories(shader
 
 target_link_libraries(shader PRIVATE
   glad
+  glfw
 )
 
 # Executable file should be linked here.
 function(auto_link_to_gl TARGET)
-  target_link_libraries(${TARGET} PRIVATE glad glfw common shader)
-  target_include_directories(${TARGET}
+  cmake_parse_arguments(ARG
+    ""
+    ""
+    "LIBS;INCLUDES"
+    ${ARGN})
+  target_link_libraries(${TARGET} PUBLIC ${ARG_LIBS})
+  target_link_libraries(${TARGET}
     PUBLIC
-    glad
-    glfw
-    common
-    shader)
+    ${ARG_INCLUDES})
 endfunction()
 
 # main.cpp
-auto_link_to_gl(${PROJECT_NAME})
+auto_link_to_gl(${PROJECT_NAME}
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
 # main_gl_draw_arrays.cpp
-auto_link_to_gl(gl_draw_arrays)
+auto_link_to_gl(gl_draw_arrays
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
 # main_different_vao_vbo.cpp
-auto_link_to_gl(gl_different_vao_vbo)
+auto_link_to_gl(gl_different_vao_vbo
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
 # main_two_color_program.cpp
-auto_link_to_gl(gl_two_color_program)
+auto_link_to_gl(gl_two_color_program
+  LIBS glad glfw common shader
+  INCLUDES glfw glad common shader)
 # main_texture
-auto_link_to_gl(gl_texture)
+auto_link_to_gl(gl_texture
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
+# main_transform
+auto_link_to_gl(gl_transform
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
+# main_coord.cpp
+auto_link_to_gl(gl_coordinate
+  LIBS glad glfw common shader
+  INCLUDES glad glfw common shader)
+# main_camera.cpp
+auto_link_to_gl(gl_camera
+  LIBS glad glfw shader
+  INCLUDES glad glfw shader)
