@@ -23,7 +23,8 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+// 这个坐标是相对于原点，也就是屏幕正中间得位置
+glm::vec3 lightPos(1.0f, 0.25f, 1.0f);
 
 int main() {
     // Initialize glfw
@@ -56,10 +57,9 @@ int main() {
     // enable depth test
     glEnable(GL_DEPTH_TEST);
     // shaders
-    Shader colorShader("./shaders/vertex/Normal.vs",
-                       "./shaders/fragment/Normal.fs");
-    Shader lightCubeShader("./shaders/vertex/LightCube.glsl",
-                           "./shaders/fragment/LightCube.glsl");
+    //Shader colorShader("./shaders/vertex/Normal.vs", "./shaders/fragment/Normal.fs");
+    Shader lightCubeShader("./shaders/vertex/LightCube.glsl", "./shaders/fragment/LightCube.glsl");
+    Shader colorShader("./shaders/vertex/Observer.vs","./shaders/fragment/Observer.fs");
     // 设置顶点数据和顶点属性
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -138,7 +138,9 @@ int main() {
         // input
         // -----
         processInput(window);
-
+        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+        lightPos.z = cos(glfwGetTime()) * 1.0f + 1.0f;
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -161,7 +163,7 @@ int main() {
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
         colorShader.setMat4("model", model);
-
+        colorShader.setVec3("viewPos",camera.Position);
         // render the cube
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
