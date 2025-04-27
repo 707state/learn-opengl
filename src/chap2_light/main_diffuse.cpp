@@ -57,9 +57,9 @@ int main() {
     // enable depth test
     glEnable(GL_DEPTH_TEST);
     // shaders
-    //Shader colorShader("./shaders/vertex/Normal.vs", "./shaders/fragment/Normal.fs");
+    Shader colorShader("./shaders/vertex/Normal.vs", "./shaders/fragment/Normal.fs");
     Shader lightCubeShader("./shaders/vertex/LightCube.glsl", "./shaders/fragment/LightCube.glsl");
-    Shader colorShader("./shaders/vertex/Observer.vs","./shaders/fragment/Observer.fs");
+    //    Shader colorShader("./shaders/vertex/Observer.vs","./shaders/fragment/Observer.fs");
     // 设置顶点数据和顶点属性
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -167,6 +167,22 @@ int main() {
         // render the cube
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+        // light properties
+        glm::vec3 lightColor;
+        lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
+        lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
+        lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+        glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+        colorShader.setVec3("light.ambient", ambientColor);
+        colorShader.setVec3("light.diffuse", diffuseColor);
+        colorShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+        // material properties
+        colorShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+        colorShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+        colorShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+        colorShader.setFloat("material.shininess", 32.0f);
 
         // also draw the lamp object
         lightCubeShader.use();
