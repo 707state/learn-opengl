@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Enable so lib
 option(BUILD_SHARED_LIBS "docstring" ON)
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # 全局构建类型设置
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
@@ -83,6 +83,11 @@ function(auto_link_to_gl TARGET)
   target_link_libraries(${TARGET}
     PUBLIC
     ${ARG_INCLUDES})
+  set_target_properties(${TARGET}
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+  )
 endfunction()
 
 add_subdirectory(src/chap1_intro/)
+add_subdirectory(src/chap2_light/)
